@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="java.util.*"%>
 <%--
   Created by IntelliJ IDEA.
   User: 李红义
@@ -40,12 +42,14 @@
             </table></td>
         </tr>
     </table>
-    <form name="form1" method="post" action="">
+    <form name="form1" method="post" action="${pageContext.request.contextPath}/desktop/news/newsPublish.do">
+        <input type="hidden" name="uid" value="1"><%--从session中用户的id--%>
+        <%--<input type="hidden" name="time" value="<% new Date();%>" >--%>
         <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="table01">
             <tr>
                 <td class="td_02">姓名</td>
                 <td width="37%" class="td_02">
-                    <input name="textfield" type="text" class="input" style="width:99% " value="张三" readonly="true">
+                    <input type="text" class="input" style="width:99% " value="张三(从session获取用户)" readonly="true">
                 </td>
                 <td width="13%" class="td_02"></td>
                 <td width="37%" class="td_02">
@@ -54,24 +58,29 @@
             </tr>
             <tr>
                 <td class="td_02">栏目名称</td>
+<%--                <td class="td_02">
+                    <select name="select1" style="width:99% ">
+                        <option value="1" selected="selected">--请选择--</option>
+                        <c:forEach items="newsLabelList" var="newsLabel">
+                        <option value="${newsLabel.id}">${newsLabel.name}</option>
+                        </c:forEach>
+                    </select>
+                </td>--%>
+                <%--<td class="td_02"></td>--%>
                 <td class="td_02">
-                    <select name="select" style="width:99% ">
-                        <option value="1" selected>--请选择--</option>
-                        <option value="2">体育新闻</option>
-                        <option value="3">娱乐新闻</option>
+                    <select name="labelId" class="input" style="width:99% ">
+                      <option value="0" selected>--请选择--</option>
+                        <c:forEach items="${newsLabelParentList}" var="newsLabel">
+                                <option value="${newsLabel.id}">${newsLabel.name}</option>
+                        </c:forEach>
                     </select>
                 </td>
                 <td class="td_02"></td>
-                <td class="td_02"><!-- <select name="select2" class="input" style="width:99% ">
-          <option value="1" selected>--请选择--</option>
-          <option value="2">天下足球</option>
-          <option value="3">我猜</option>
-        </select> --></td>
             </tr>
             <tr>
                 <td class="td_02">新闻标题</td>
                 <td colspan="3" class="td_02">
-                    <input name="textfield" type="text" class="input" style="width:99% " >
+                    <input name="title" type="text" class="input" style="width:99% " >
                 </td>
             </tr>
             <!-- <tr>
@@ -83,7 +92,7 @@
             <tr>
                 <td class="td_02">新闻内容</td>
                 <td colspan="3" class="td_02">
-                    <textarea name="textarea" style="width:99% " rows="10">bbbbbbbbbbbbbbbbbbbbbb</textarea>
+                    <textarea name="content" style="width:99% " rows="10">bbbbbbbbbbbbbbbbbbbbbb</textarea>
                 </td>
             </tr>
         </table>

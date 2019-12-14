@@ -9,6 +9,15 @@
     <select id="selectNewsLabel" resultMap="newsLabelMap">
         select * from newlabel limit #{pageStartIndex},#{pageSize};
     </select>
+
+    <select id="selectCountById"  resultType="int">
+        select count(*) from newlabel where id =#{id} or pid = #{id}
+    </select>
+    <!--根据id查询名称的分页 -->
+    <select id="queryNewsLabelById" resultMap="newsLabelMap">
+        select * from newlabel where id =#{id} or pid = #{id} limit #{page.pageStartIndex},#{page.pageSize}
+    </select>
+
     <!--    newsLabel的映射关系 -->
     <resultMap id="newsLabelMap" type="newsLabel">
         <id property="id" column="id"/>
@@ -50,7 +59,6 @@
     <select id="selectNewsLabelById" resultMap="newsLabelMap">
         select id,label_name,label_content,pid from newlabel where id=#{id}
     </select>
-
 <!--    &lt;!&ndash;删除子栏目&ndash;&gt;
     <delete id="deleteChildNewsLabel">
         delete from newlabel
@@ -79,4 +87,8 @@
     <insert id="insertNewsLabel">
         insert into newlabel (label_name,label_content,pid) values (#{name},#{textarea},#{pid});
     </insert>
+    <select id="selectAllNewsLabel" resultMap="newsLabelMap">
+        select * from newlabel
+    </select>
+
 </mapper>

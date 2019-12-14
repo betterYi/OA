@@ -34,6 +34,37 @@ public class NewsLabelServiceImpl implements NewsLabelService{
     }
 
     /**
+     * 按照id查询页条目以及他的子条目并获取分页
+     * @param id
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public Page findCurrentPageById(Integer id, Integer pageNum) {
+        Page<NewsLabel> page = new Page();
+
+        page.setPageNum(pageNum);//设置需要的页面
+
+        int count = newsLabelDao.selectCountById(id);
+        page.setTotalRow(count);
+
+        System.err.println(page);
+        List<NewsLabel> datas = newsLabelDao.queryNewsLabelById(id,page);
+
+        page.setDatas(datas);//需要的页面数据
+        return page;
+    }
+
+    /**
+     * 查询所有的栏目
+     * @return
+     */
+    @Override
+    public List<NewsLabel> queryAllNewsLabel() {
+        return newsLabelDao.selectAllNewsLabel();
+    }
+
+    /**
      * 通过id查询新闻条目
      * @param id
      * @return
@@ -63,4 +94,6 @@ public class NewsLabelServiceImpl implements NewsLabelService{
     public int addNewsLabel(String name, Integer pid, String textarea) {
         return newsLabelDao.insertNewsLabel(name,pid,textarea);
     }
+
+
 }

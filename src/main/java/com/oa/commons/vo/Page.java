@@ -17,7 +17,6 @@ public class Page<T>{//使用泛型可以保证所有的类都可以使用此值
     }
 
     public void setPageNum(int pageNum) {
-        //this.pageSize = pageNum <= totalRow/pageSize ? pageNum : 1;//对下一页控制
         this.pageNum = pageNum;
     }
 

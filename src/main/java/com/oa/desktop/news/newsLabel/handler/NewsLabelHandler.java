@@ -1,8 +1,10 @@
 package com.oa.desktop.news.newsLabel.handler;
 
+import com.oa.commons.beans.News;
 import com.oa.commons.beans.NewsLabel;
 import com.oa.commons.vo.Page;
 import com.oa.desktop.news.newsLabel.service.NewsLabelService;
+import com.oa.desktop.news.newsLabel.service.NewsService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 @Controller
@@ -22,6 +26,8 @@ import java.util.List;
 public class NewsLabelHandler {
     @Autowired
     private NewsLabelService newsLabelService;
+    @Autowired
+    private NewsService newsService;
 
     /***
      * 分页
@@ -29,15 +35,49 @@ public class NewsLabelHandler {
      * @param session
      * @return
      */
+
     @RequestMapping("/queryNewsLabel.do")
-    public String queryNesLabel(@RequestParam(value = "pageNum",defaultValue = "1")Integer pageNum, HttpSession session){
+    public String queryNesLabel(@RequestParam(value = "id",defaultValue="0") Integer id,@RequestParam(value = "pageNum",defaultValue = "1")Integer pageNum, HttpSession session){
+
+        /**
+         * 栏目名称查询包括 自身和他下面的所有子类
+         * 在js页面获取表单选中的id，默认值是0，传到后台，如果是0表示查询全部的条目；如果不是0就表示查询查询id和他的子类
+         *
+         * onchange()触发后获取到id到后台查询；后台查询后获取到id当做下一页的参数；请求
+         */
 
         Page page = newsLabelService.findCurrentPage(pageNum);
+
         // System.out.println(pageNum);
         session.setAttribute("page",page);//将page保存到session域中；
         //System.out.println(page);
+
+        //第一次加载jsp页面会用到
+        session.setAttribute("id",id);//第一次默认查询，上面依据的栏目id是0，就是查询全部
+
+        List<NewsLabel> newsLabelList = newsLabelService.queryAllNewsLabel();
+        session.setAttribute("newsLabelList",newsLabelList);
+
         return "forward:/jsp/news/newsLabelManager.jsp";
     }
+    /***
+     * 重新写一个方法ajax调用它；刷新页面但是要保存栏目的id，然后如果id不是0调用分类查询的分页；id是0就不调用它；在超链接处加c:if标签
+     *
+     */
+    @RequestMapping("/queryNewsLabelById.do")
+    public String queryNewsLabelById(@RequestParam(value = "id",defaultValue="0") Integer id,@RequestParam(value = "pageNum",defaultValue = "1")Integer pageNum,HttpSession session){
+        Page page = newsLabelService.findCurrentPageById(id,pageNum);
+        session.setAttribute("id",id);//保存的当前选中id
+        System.err.println(id);
+        session.setAttribute("page",page);
+        System.err.println(page);
+        return "forward:/jsp/news/newsLabelManager.jsp";
+    }
+
+
+
+
+
     /***
      * 项目完善：
      * 上一页：传入负数需要验证
@@ -46,7 +86,7 @@ public class NewsLabelHandler {
     /**
      * mvc404排查：是否读到配置文件
      * 域对象 大小范围，以及使用方法
-     * 无效绑定 的 错误原因；其实
+     * 无效绑定 的 错误原因；其实是因为接口和映射文件的名称不一致
      */
     /***
      * 循环调用：一个实体他有自己的父亲，自己的list集合的儿子们；如果两者关联resultMap都调用自身；那么他就无限循环；
@@ -76,7 +116,7 @@ public class NewsLabelHandler {
         System.out.println("删除自己");
 
         int count1 = newsLabelService.deleteNewsLabelById(newsLabel.getId());
-        if(count1>0)System.out.println("删除自身条目成功");
+        if(count1>0)System.err.println("删除自身条目成功");
 
         //获取参数
         if(del_parent == true) {
@@ -85,15 +125,16 @@ public class NewsLabelHandler {
              */
             System.out.println("级联删除父栏目");
 
-            /*需求不明确，*/
-            if(newsLabel.getParent().getId() != 0){
+            //如果有父栏目就删除
+            if(newsLabel.getParent() != null){
                 int count2;
                 count2 = newsLabelService.deleteNewsLabelById(newsLabel.getParent().getId());
-                if(count2>0)System.out.println("删除父条目成功");
+                if(count2>0)System.err.println("删除父条目成功");
+            }else{
+                System.err.println("没有父条目");
             }
-
         }else{
-            System.out.println("没有删除父条目");
+            System.err.println("不删除父条目");
         }
 
         return "1";
@@ -140,7 +181,6 @@ public class NewsLabelHandler {
     }
     @RequestMapping(value = "/newsLabelAddPre.do",produces="application/json;charset=utf-8")
     public String newsLabelAddPre(HttpSession session){
-
         //查询所有的父栏目；保存到session域中；
         List<NewsLabel> newsLabelParentList = newsLabelService.selectAllParent();
         session.setAttribute("newsLabelParentList",newsLabelParentList);
@@ -161,5 +201,55 @@ public class NewsLabelHandler {
         session.setAttribute("newsLabelParentList",newsLabelParentList);
         System.err.println(newsLabelParentList);
         return "/jsp/news/newsLabelAdd.jsp";
+    }
+
+
+
+    @RequestMapping("/newsPublishPre.do")
+    public String newsPublishPre(HttpSession session){
+        List<NewsLabel> newsLabelParentList = newsLabelService.selectAllParent();
+        session.setAttribute("newsLabelParentList",newsLabelParentList);
+        System.err.println(newsLabelParentList);
+        return "/jsp/news/newsPublish.jsp";
+    }
+
+    @RequestMapping("/newsPublish.do")
+    public String newsPublish(News news,Integer labelId){
+        /**
+         * 接收参数，在数据库中添加数据，然后回显到页面
+         */
+
+        NewsLabel newsLabel= newsLabelService.selectNewsLabelById(labelId);
+
+        news.setNewsLabel(newsLabel);
+        System.err.println(news);
+        //封装时间
+
+        // 返回系统当前时间
+        Date date = new Date();
+
+/*        // 将当前时间转化为sql时间,不带时间值
+        java.sql.Date transDate = new java.sql.Date(date.getTime());
+        System.err.println(transDate);
+        news.setTime(transDate);*/
+
+
+        //转换时间格式，带时间值
+        SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        news.setTime(Timestamp.valueOf(simpleDate.format(date)));
+
+        System.err.println(news);
+
+        int count = newsService.newsAdd(news);
+        return "/jsp/news/newsPublish.jsp";
+    }
+    @RequestMapping("/newsMaintenancePre.do")
+    public String newsMaintenancePre(HttpSession session){
+        /**
+         * 获取news对象；保存到域对象中
+         */
+        List<News>  newsList = newsService.queryNewsAll();
+        session.setAttribute("newsList",newsList);
+        return "/jsp/news/newsMaintenanceQueryByCommon.jsp";
     }
 }

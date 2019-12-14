@@ -18,4 +18,8 @@ public interface NewsLabelService {
     int newsLabelEdit(int id,int pid, String content, String name);
 
     int addNewsLabel(String name, Integer pid, String textarea);
+
+    Page findCurrentPageById(Integer id, Integer pageNum);
+
+    List<NewsLabel> queryAllNewsLabel();
 }

@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: 李红义
@@ -5,6 +6,7 @@
   Time: 20:21
   To change this template use File | Settings | File Templates.
 --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -14,10 +16,8 @@
     <script language="javascript" src="../../js/util.js">
     </script>
     <style type="text/css">
-        <!--
         .style1 {font-size: 14px}
         .style2 {color: #333333}
-        -->
     </style>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
@@ -34,7 +34,7 @@
 </table>
 <br>
 <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
-    <td width="79%" class="td_page style1">--普通查询--<a href="新闻维护_按时间查询.htm" class="style1">按时间查询</a>--</td>
+    <td width="79%" class="td_page style1">--普通查询--<a href="${pageContext.request.contextPath}/jsp/news/newsMaintenanceQueryByTime.jsp" class="style1">按时间查询</a>--</td>
 </table>
 <form name="form1" method="post" action="">
     <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
@@ -48,10 +48,8 @@
             <td width="14%" align="center" class="td_02">栏目名称</td>
             <td width="34%" class="td_02"><select name="select" style="width:98.9% ">
                 <option value="1" selected>--请选择--</option>
-                <option value="2">体育新闻</option>
-                <option value="3">娱乐新闻</option>
             </select>
-                </span><span class="td_form02"></td>
+                <span class="td_form02"></span></td>
             <td align="center" class="td_02"></td>
             <td width="34%" class="td_02"><!-- <select name="select" class="input"
 
@@ -119,22 +117,25 @@ style="width:98.9% " > --></td>
             <td width="11%" class="td_top">审核状态</td>
             <td width="6%" class="td_top">修改</td>
         </tr>
+        <c:forEach items="${newsList}" var="news">
         <tr>
+            
             <td class="td07" align="center"><input type="checkbox" name="checkbox"
-
                                                    value="checkbox"></td>
-            <td class="td07"><a href="#" onClick="javascript:windowOpen('查看新闻详细信息.htm','','',670,450,'no','yes','100','100')">我猜</a></td>
-            <td class="td07">我猜</td>
-            <td class="td07">娱乐新闻</td>
-            <td class="td07">张三</td>
-            <td class="td07"><FONT style="FONT-SIZE: 10pt" color=#000000>2008/04/10 <FONT
+            <td class="td07"><a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/desktop/news/newsMaintenancePre.do','','',670,450,'no','yes','100','100')">${news.title}</a></td>
+            <td class="td07">${news.newsLabel.name}</td>
+            <td class="td07">${news.newsLabel.parent.name}</td>
+            <td class="td07">张三(session中获取)</td>
+            <td class="td07"><FONT style="FONT-SIZE: 10pt" color=#000000><fmt:formatDate value="${news.time}" pattern="yyyy-MM-dd HH:mm:ss"/><FONT
 
-                    style="FONT-SIZE: 10pt" color=#000000>11:23</FONT></FONT></td>
-            <td class="td07"><a href="#" onClick="javascript:windowOpen('新闻审核.htm','','',700,600,'no','yes','100','100')">未审核</a></td>
+                    style="FONT-SIZE: 10pt" color=#000000></FONT></FONT></td>
+            <td class="td07"><a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/jsp/news/newsReview.jsp','','',700,600,'no','yes','100','100')">未审核</a></td>
             <td class="td07">
-                <a href="#" onClick="javascript:windowOpen('新闻修改.htm','','',700,430,'no','yes','100','100')">修改</a>
+                <a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/jsp/news/newsEdit.jsp','','',700,430,'no','yes','100','100')">修改</a>
             </td>
+
         </tr>
+        </c:forEach>
         <tr>
             <td class="td07">&nbsp;</td>
             <td class="td07">&nbsp;</td>

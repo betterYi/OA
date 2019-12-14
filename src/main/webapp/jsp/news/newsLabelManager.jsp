@@ -15,6 +15,23 @@
     <script language="javascript" src="../../js/util.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-1.8.3.js"></script>
     <script>
+        $(function () {
+                $("select[name='id']").change(
+                    function(){
+                        chuanzhi(value);
+                    }
+                )
+            }
+        );
+        function chuanzhi(value) {
+            // alert(value);
+            if(value != 0)
+            window.location.href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id="+value;
+            else{
+                window.location.href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do;"
+            }
+
+        }
         function shanchu(id)
         {
             var del = confirm("确定要删除本条目吗？");
@@ -37,13 +54,13 @@
                     data: { "id": id ,"del_parent": del_p}, //参数值
                     url: "${pageContext.request.contextPath}/desktop/news/deleteNewsLabel.do",
                     success : function(mesg){
-                        alert(mesg);
+                        // alert(mesg);
                         if(mesg==1){
                             alert("删除成功");
                         }
                     },
                     error: function() {
-                        alert("error")
+                        alert("error");
                     }
                 });
                 location.reload();
@@ -85,10 +102,11 @@
             <tr>
                 <td width="14%" class="td_02">栏目名称</td>
                 <td width="86%" class="td_02">
-                    <select name="select" class="input" style="width:99% ">
-                        <option value="1" selected>--请选择--</option>
-                        <option value="2">体育新闻</option>
-                        <option value="3">娱乐新闻</option>
+                    <select name="id" class="input" style="width:99% " id="queryById" onchange="chuanzhi(this.options[this.options.selectedIndex].value)">
+                        <option value="0" selected="selected">--请选择--</option>
+                        <c:forEach items="${newsLabelList}" var="newsLabel">
+                            <option value="${newsLabel.id}" <c:if test="${id == newsLabel.id}">selected="selected"</c:if>> ${newsLabel.name}</option>
+                        </c:forEach>
                     </select>
                 </td>
             </tr>
@@ -105,10 +123,53 @@
         </table>
         <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0" class="table01">
             <tr>
-                <td colspan="5" align="right" class="td07"><img src="../../images/1.gif" width="4" height="5" align="absmiddle"> <a href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=1">首页</a>　
-                    <img src="../../images/2.gif" width="3" height="5" align="absmiddle"> <a href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.pageNum-1}">上一页</a>　
-                    <img src="../../images/2-2.gif" width="3" height="5" align="absmiddle"> <a href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.pageNum+1}">下一页</a>　
-                    <img src="../../images/3.gif" width="4" height="5" align="absmiddle"> <a href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.totalPages}">末页</a>
+                <td colspan="5" align="right" class="td07"><img src="../../images/1.gif" width="4" height="5" align="absmiddle"> <a
+                    <c:if test="${page.pageNum != 1}">
+                        <c:choose>
+                            <c:when test="${id == 0}">
+                                href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=1"
+                            </c:when>
+                            <c:otherwise>
+                                href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id=${id}&pageNum=1"
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if> >首页</a>
+                    <img src="../../images/2.gif" width="3" height="5" align="absmiddle"> <a
+                            <c:if test="${page.pageNum > 1}">
+                                <c:choose>
+                                    <c:when test="${id != 0}">
+                                        href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id=${id}&pageNum=${sessionScope.page.pageNum-1}"
+                                    </c:when>
+                                    <c:otherwise>
+                                        href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.pageNum-1}"
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>>上一页</a>
+
+                    <img src="../../images/2-2.gif" width="3" height="5" align="absmiddle"> <a
+                            <c:if test="${page.pageNum < page.totalPages}">
+                                <c:choose>
+                                <c:when test="${id != 0}">
+                                    <%--如果id不为0就去查找对应的子栏目--%>
+                                    href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id=${id}&pageNum=${page.pageNum+1}"
+                                </c:when>
+                                <c:otherwise>
+                                    href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.pageNum+1}"
+                                </c:otherwise>
+                                </c:choose>
+                            </c:if>>下一页</a>
+
+                    <img src="../../images/3.gif" width="4" height="5" align="absmiddle"> <a
+                        <c:if test="${page.pageNum != page.totalPages}">
+                            <c:choose>
+                                <c:when test="${id != 0}">
+                                    href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id=${id}&pageNum=${sessionScope.page.totalPages}"
+                                </c:when>
+                                <c:otherwise>
+                                    href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do?pageNum=${sessionScope.page.totalPages}"
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if> >末页</a>
                     　　共 ${sessionScope.page.totalPages} 页 ${sessionScope.page.totalRow} 条记录</td>
             </tr>
             <tr>
