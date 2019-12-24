@@ -20,6 +20,40 @@ var gCalDefDate = "";
 
 var CAL_MODE_NOBLANK = "2";
 
+var gMonths = new Array("1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月");
+
+with (document) {
+	write("<Div id='VicPopCal' style='OVERFLOW:hidden;POSITION:absolute;VISIBILITY:hidden;border:0px ridge;width:100%;height:100%;top:0;left:0;z-index:100;overflow:hidden'>");
+	write("<table border='0' bgcolor='#3366cc' cellspacing=0 cellpadding=1>");
+	write("<TR>");
+	write("<td valign='middle' align='left'>");
+	write("<SELECT name='tbSelYear' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
+	for(i=1930;i<2029;i++)
+		write("<OPTION value='"+i+"'>"+i+"年</OPTION>");
+	write("</SELECT>");
+	write("&nbsp;<select name='tbSelMonth' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
+	for (i=0; i<12; i++)
+		write("<option value='"+(i+1)+"'>"+gMonths[i]+"</option>");
+	write("</SELECT>");
+	write("&nbsp;&nbsp;<span title='上一月份' onclick='javascript:fPrevMonth()' onmouseover='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' style='cursor:hand; font-family:webdings; color:"+gcLinkText+"'>3</span>");
+	write("<span title='下一月份' onclick='javascript:fNextMonth()' onmouseover='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' style='cursor:hand; font-family:webdings; color:"+gcLinkText+"'>4</span>");
+	write("</td>");
+	write("</TR><TR>");
+	write("<td align='right'>");
+	write("<DIV style='background-color:#cccccc'><table width='100%' border='1' cellspacing=1 cellpadding=0>");
+	fDrawCal(giYear, giMonth, 8, '12');
+	write("</table></DIV>");
+	write("</td>");
+	write("</TR><TR><TD align='center'>");
+	write("<TABLE width='100%'><TR><TD align='right'>");
+	write("<span ID=\"CAL_B_BLANK\" style='color:"+gcLinkText+"; visibility:visible; cursor:hand; font-size:9pt' onclick='fSetDate(0,0,0)' onMouseOver='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' title=清除日期框中的值>[ 清空 ]</span>");
+
+	write("<span style='color:"+gcLinkText+";cursor:hand; font-size:9pt' onclick='fSetDate(giYear,giMonth,giDay)' onMouseOver='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' title=选择当前日期>  [ "+giYear+"/"+giMonth+"/"+giDay+" ]</span>");
+	write("</td></tr></table>");
+	write("</TD></TR>");
+	write("</TABLE></Div>");
+}
+
 function fSetDate(iYear, iMonth, iDay){
   //VicPopCal.style.visibility = "hidden";
   if ((iYear == 0) && (iMonth == 0) && (iDay == 0)){
@@ -254,38 +288,4 @@ function fPopCalendar(popCtrl, dateCtrl, mode, defDate){
 	fToggleTags(point); 	
 	visibility = 'visible';
   }
-}
-
-var gMonths = new Array("1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月");
-
-with (document) {
-write("<Div id='VicPopCal' style='OVERFLOW:hidden;POSITION:absolute;VISIBILITY:hidden;border:0px ridge;width:100%;height:100%;top:0;left:0;z-index:100;overflow:hidden'>");
-write("<table border='0' bgcolor='#3366cc' cellspacing=0 cellpadding=1>");
-write("<TR>");
-write("<td valign='middle' align='left'>");
-write("<SELECT name='tbSelYear' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
-for(i=1930;i<2029;i++)
-	write("<OPTION value='"+i+"'>"+i+"年</OPTION>");
-write("</SELECT>");
-write("&nbsp;<select name='tbSelMonth' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' Victor='Won'>");
-for (i=0; i<12; i++)
-	write("<option value='"+(i+1)+"'>"+gMonths[i]+"</option>");
-write("</SELECT>");
-write("&nbsp;&nbsp;<span title='上一月份' onclick='javascript:fPrevMonth()' onmouseover='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' style='cursor:hand; font-family:webdings; color:"+gcLinkText+"'>3</span>");
-write("<span title='下一月份' onclick='javascript:fNextMonth()' onmouseover='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' style='cursor:hand; font-family:webdings; color:"+gcLinkText+"'>4</span>");
-write("</td>");
-write("</TR><TR>");
-write("<td align='right'>");
-write("<DIV style='background-color:#cccccc'><table width='100%' border='1' cellspacing=1 cellpadding=0>");
-fDrawCal(giYear, giMonth, 8, '12');
-write("</table></DIV>");
-write("</td>");
-write("</TR><TR><TD align='center'>");
-write("<TABLE width='100%'><TR><TD align='right'>");
-write("<span ID=\"CAL_B_BLANK\" style='color:"+gcLinkText+"; visibility:visible; cursor:hand; font-size:9pt' onclick='fSetDate(0,0,0)' onMouseOver='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' title=清除日期框中的值>[ 清空 ]</span>");
-
-write("<span style='color:"+gcLinkText+";cursor:hand; font-size:9pt' onclick='fSetDate(giYear,giMonth,giDay)' onMouseOver='this.style.color=gcToggleText' onMouseOut='this.style.color=gcLinkText' title=选择当前日期>  [ "+giYear+"/"+giMonth+"/"+giDay+" ]</span>");
-write("</td></tr></table>");
-write("</TD></TR>");
-write("</TABLE></Div>");
 }

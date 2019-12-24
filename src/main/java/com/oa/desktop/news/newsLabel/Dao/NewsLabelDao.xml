@@ -6,6 +6,7 @@
     <select id="selectAllCount" resultType="int">
         select count(*) from newlabel
     </select>
+
     <select id="selectNewsLabel" resultMap="newsLabelMap">
         select * from newlabel limit #{pageStartIndex},#{pageSize};
     </select>
@@ -72,7 +73,7 @@
     <!--通过id删除-->
     <delete id="deleteNewsLabelById">
         delete from newlabel
-        where id=#{child.id}
+        where id=#{id}
     </delete>
 
     <select id="selectAllParent" resultMap="newsLabelMap">

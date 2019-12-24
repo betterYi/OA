@@ -21,4 +21,14 @@ public class NewsServiceImpl implements NewsService {
     public List<News> queryNewsAll() {
         return newsDao.queryNewsAll();
     }
+
+    @Override
+    public int newsDelete(Integer[] ids) {
+        return newsDao.newsDelete(ids);
+    }
+
+    @Override
+    public List<News> queryNewsByDate(String startTime, String endTime) {
+        return newsDao.queryNewsByDate(startTime,endTime);
+    }
 }

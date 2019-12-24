@@ -28,9 +28,8 @@
             if(value != 0)
             window.location.href="${pageContext.request.contextPath}/desktop/news/queryNewsLabelById.do?id="+value;
             else{
-                window.location.href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do;"
+                window.location.href="${pageContext.request.contextPath}/desktop/news/queryNewsLabel.do"
             }
-
         }
         function shanchu(id)
         {
@@ -68,19 +67,8 @@
                 alert("取消删除")
             }
             }
-
-        /*删除本条目提醒*/
-        function p_del() {
-            var msg = "是否要删除父元素？";
-            if (confirm(msg)==true){
-                return true;
-            }else{
-                return false;
-            }
-        }
     </script>
 </head>
-
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <center>
     <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -117,7 +105,7 @@
             <tr>
                 <td class="td_page" align="left">
                     <div align="right">
-                        <input name="Submit" type="submit" class="buttonface02" value="添加栏目" onClick="javascript:windowOpen('${pageContext.request.contextPath}/desktop/news/newsLabelAddPre.do','','',700,300,'','','')">
+                        <input name="Submit" type="button" class="buttonface02" value="添加栏目" onClick="javascript:windowOpen('${pageContext.request.contextPath}/desktop/news/newsLabelAddPre.do','','',700,300,'','','')">
                     </div></td>
             </tr>
         </table>

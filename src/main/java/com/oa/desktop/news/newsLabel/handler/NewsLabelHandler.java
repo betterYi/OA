@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -136,7 +137,6 @@ public class NewsLabelHandler {
         }else{
             System.err.println("不删除父条目");
         }
-
         return "1";
     }
 
@@ -225,6 +225,7 @@ public class NewsLabelHandler {
         System.err.println(news);
         //封装时间
 
+
         // 返回系统当前时间
         Date date = new Date();
 
@@ -236,11 +237,12 @@ public class NewsLabelHandler {
 
         //转换时间格式，带时间值
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        news.setTime(Timestamp.valueOf(simpleDate.format(date)));
+        news.setTime(Timestamp.valueOf(simpleDate.format(date)));//timestamp是sql中的类型
 
         System.err.println(news);
 
         int count = newsService.newsAdd(news);
+        if( count > 0 ) System.err.println("新增新闻成功！！");
         return "/jsp/news/newsPublish.jsp";
     }
     @RequestMapping("/newsMaintenancePre.do")
@@ -248,8 +250,52 @@ public class NewsLabelHandler {
         /**
          * 获取news对象；保存到域对象中
          */
-        List<News>  newsList = newsService.queryNewsAll();
+        List<News>  newsList = newsService.queryNewsAll();///尽量使用request域对象存储，在访问页面前进行回显，存入request域中
+
+        for(News news :newsList)
+            System.out.println(news);
+
         session.setAttribute("newsList",newsList);
         return "/jsp/news/newsMaintenanceQueryByCommon.jsp";
+    }
+    @RequestMapping("/newsDelete.do")
+    public String newsDelete(String ids, HttpSession session){
+        /**
+         * 获取需要删除的数组，然后调用数据库删除
+         */
+
+        //首先将数组拆分；
+        System.err.println(ids.length());
+
+        String[] id = ids.split(",");
+
+        Integer[] d = new Integer[id.length];//定义一个同样大小的数组
+
+        for (int i=0;i<id.length;i++){
+            d[i]=Integer.parseInt(id[i]);
+        }
+
+        int count  = newsService.newsDelete(d);
+        return "/desktop/news/newsMaintenancePre.do";
+    }
+    
+    @RequestMapping("/queryNewsByTime.do")
+    public String queryNewsByTime(String beginTime,String endTime,HttpSession session) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date begin = format.parse(beginTime);//按照固定格式转换字符串
+        Date end = format.parse(endTime);//
+
+        System.err.println(format.format(begin)+" "+format.format(end));
+        System.err.println(begin+" "+end);
+//       Timestamp.valueOf(format.format(begin));
+//       Timestamp.valueOf(format.format(end));
+        List<News> newsList = newsService.queryNewsByDate(format.format(begin),format.format(end));
+        for(News news : newsList){
+            System.out.println(news);
+        }
+
+        session.setAttribute("newsList",newsList);
+
+        return "/jsp/news/newsMaintenanceQueryByTime.jsp";
     }
 }

@@ -10,10 +10,31 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>个人设置</title>
     <link href="../../css/style.css" rel="stylesheet" type="text/css">
-    <script language="javascript" src="../../js/util.js">
+    <script type="text/javascript" language="javascript" src="../../js/util.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-1.8.3.js"></script>
+    <script>
+        function queding() {
+            var c = confirm("确定删除所选的元素");
+            if(c == true){
+                var obj = document.getElementsByName("ids");
+                var ids = [];
+                for(var k in obj){
+                    if(obj[k].checked)/*找出刚才被选中的那些*/
+                        ids.push(obj[k].value);//向数组中新加如元素
+                }
+                if(ids.length != 0){
+                    /*向后台传值然后调用删除方法 */
+                    window.location.href="${pageContext.request.contextPath}/desktop/news/newsDelete.do?ids="+ids;
+                }else{
+                    alert("请先选中！！");
+                }
+            }else{
+                alert("取消删除！！");
+             }
+        }
     </script>
     <style type="text/css">
         .style1 {font-size: 14px}
@@ -62,10 +83,8 @@ style="width:98.9% ">
         <tr>
             <td class="td_02" align="center">新闻标题</td>
             <td class="td_02"><input name="textfield2" type="text" class="input"
-
                                      style="width:98.9% " ></td>
             <td align="center" class="td_02"><input name="Submit" type="button" class="buttonface02"
-
                                                     value="  查询  "></td>
             <td class="td_02"><!-- <input name="textfield3" type="text" class="input"
 
@@ -84,31 +103,26 @@ style="width:98.9% " > --></td>
     <br>
     <table width="95%"  border="0" align="center" cellpadding="0" cellspacing="0">
         <tr>
-            <td class="td_page"><div align="right">
-                <input name="Submit" type="submit" class="buttonface02" value="  删 除  "
-
-                       onClick="queding()">
-            </div></td>
+            <td class="td_page">
+                <div align="right">
+                <input name="Submit" type="button" class="buttonface02" value="  删 除  "
+                       onclick="queding()" ><%----%>
+                </div>
+            </td>
         </tr>
     </table>
     <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
-
            class="table01">
         <tr>
-            <td colspan="8" align="right" class="td07"><img src="../../images/1.gif" width="4"
-
-                                                            height="5" align="absmiddle"> 首页　 <img src="../../images/2.gif" width="3" height="5"
-
-                                                                                                   align="absmiddle"> 上一页　 <img src="../../images/2-2.gif" width="3" height="5"
-
-                                                                                                                                align="absmiddle"> 下一页　 <img src="../../images/3.gif" width="4" height="5"
-
-                                                                                                                                                             align="absmiddle"> 末页　　共 1 页 1 条记录</td>
+            <td colspan="8" align="right" class="td07">
+                <img src="../../images/1.gif" width="4" height="5" align="absmiddle"> 首页
+                <img src="../../images/2.gif" width="3" height="5" align="absmiddle"> 上一页
+                <img src="../../images/2-2.gif" width="3" height="5" align="absmiddle"> 下一页　
+                <img src="../../images/3.gif" width="4" height="5" align="absmiddle"> 末页　　 共 1 页 1 条记录</td>
         </tr>
         <tr>
-            <td width="6%" class="td_top"c align="center"><input name="chk" type="checkbox"
-
-                                                                 id="chk" onClick="selectAllByChk(chk,checkbox)" value="checkbox0"></td>
+            <td width="6%" class="td_top"c align="center">
+                <%--<input name="chk" type="checkbox" id="chk" onClick="selectAllByChk(chk,checkbox)" value="0">--%></td>
             <td width="16%" class="td_top">新闻标题</td>
             <td width="15%" class="td_top">栏目名称</td>
             <td width="14%" class="td_top">上级栏目名称</td>
@@ -119,45 +133,21 @@ style="width:98.9% " > --></td>
         </tr>
         <c:forEach items="${newsList}" var="news">
         <tr>
-
-            <td class="td07" align="center"><input type="checkbox" name="checkbox"
-                                                   value="checkbox"></td>
-            <td class="td07"><a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/desktop/news/newsMaintenancePre.do','','',670,450,'no','yes','100','100')">${news.title}</a></td>
+            <td class="td07" align="center">
+                <input type="checkbox" name="ids" value="${news.id}">
+            </td>
+            <td class="td07"><a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/jsp/news/newsDesc.jsp','','',670,450,'no','yes','100','100')">${news.title}</a></td>
             <td class="td07">${news.newsLabel.name}</td>
             <td class="td07">${news.newsLabel.parent.name}</td>
             <td class="td07">张三(session中获取)</td>
             <td class="td07"><FONT style="FONT-SIZE: 10pt" color=#000000><fmt:formatDate value="${news.time}" pattern="yyyy-MM-dd HH:mm:ss"/><FONT
-
                     style="FONT-SIZE: 10pt" color=#000000></FONT></FONT></td>
             <td class="td07"><a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/jsp/news/newsReview.jsp','','',700,600,'no','yes','100','100')">未审核</a></td>
             <td class="td07">
                 <a href="#" onClick="javascript:windowOpen('${pageContext.request.contextPath}/jsp/news/newsEdit.jsp','','',700,430,'no','yes','100','100')">修改</a>
             </td>
-
         </tr>
         </c:forEach>
-        <tr>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-        </tr>
-        <tr>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-            <td class="td07">&nbsp;</td>
-        </tr>
-
-
     </table>
     <p><br>
     </p>

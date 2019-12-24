@@ -25,4 +25,14 @@
     <select id="selectNewsLabelById" resultMap="com.oa.desktop.news.newsLabel.Dao.NewsLabelDao.newsLabelMap">
         select * from newlabel where id=#{labelid}
     </select>
+    <delete id="newsDelete">
+        delete from newmanage
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="queryNewsByDate" resultMap="newsMap">
+        select * from newmanage where time between #{startTime} and #{endTime};
+    </select>
 </mapper>
